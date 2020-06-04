@@ -13,17 +13,37 @@ public class Towers : Draggable
         Biological
     }
 
-    [SerializeField] protected int      m_level;        //Related to ammo type
-    [SerializeField] protected float    m_damage;       //Higher the level, higher the damage
-    [SerializeField] protected int      m_cost;         //Higher cost too
-    [SerializeField] protected int      m_lineOfSight;  //Maybe larger line of sight, idk
+    [SerializeField] protected int          m_level;        //Related to ammo type
+    [SerializeField] protected float        m_damage;       //Higher the level, higher the damage
+    [SerializeField] protected int          m_cost;         //Higher cost too
+    [SerializeField] protected int          m_lineOfSight;  //Maybe larger line of sight, idk
+    [SerializeField] protected GameObject   m_ammoPrefab;
+    [SerializeField] protected float        m_shootPower;
+    [SerializeField] protected float        m_shootDelay;
 
-    protected Enemy m_closestEnemy; //The target
+    protected float     m_shootTimer;
+    protected Transform m_shootNode;
+    protected Transform m_closestEnemy; //The target
+    
+    protected void Attack()
+    {
+        m_shootTimer += Time.deltaTime;
+        transform.LookAt(m_closestEnemy.transform);
+
+        if (m_shootTimer > m_shootDelay)
+        {
+            GameObject bullet = Instantiate(m_ammoPrefab, m_shootNode.position, Quaternion.identity );                                 //Create the bullet 
+            bullet.GetComponent<Rigidbody>().velocity = transform.TransformDirection(0, 0, m_shootPower);   //Shoot
+            m_shootTimer = 0;                                                                               //Reset timer
+            Destroy(bullet, 3f);                                                                            //Destroy the bullet after 3 seconds to avoid screen clutter
+        }
+    }
 
     /// <summary>
-    /// Make an invisible sphere and anything that walks in gets shot
+    /// Makes a invisible sphere around the tower, and whatever enemy steps in is the target
     /// </summary>
-    protected void CheckDistanceFromEnemy()
+    /// <returns>if an enemy is nearby</returns>
+    protected bool CheckDistanceFromEnemy()
     {
         Collider[] collisions = Physics.OverlapSphere(transform.position, m_lineOfSight);
         foreach(Collider collider in collisions)
@@ -31,15 +51,20 @@ public class Towers : Draggable
             switch(collider.tag)
             {
                 case "Enemy":
-                    m_closestEnemy = collider.GetComponent<Enemy>();
-                    break;
+                    m_closestEnemy = collider.transform;
+                    Debug.Log("Shoot em!");
+                    return true;
             }
         }
+        return false;
     }
 
     protected void FixedUpdate()
     {
-        CheckDistanceFromEnemy();
+        if(CheckDistanceFromEnemy())
+        {
+            Attack();
+        }
     }
     
     /// <summary>
@@ -49,5 +74,10 @@ public class Towers : Draggable
     {
         Gizmos.color = Color.magenta;
         Gizmos.DrawSphere(transform.position, m_lineOfSight);
+    }
+
+    protected void Start()
+    {
+        m_shootNode = transform.Find("Shoot Node");
     }
 }

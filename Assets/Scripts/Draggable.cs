@@ -10,19 +10,30 @@ public class Draggable : MonoBehaviour
     private Color m_hoverColor = Color.yellow;
     private Color m_originalColor;
 
-    //---------------Drag variables---------------//
+    #region[Drag variables]
     private Vector3 m_startingPos   = new Vector3();
     private Vector3 m_offset        = new Vector3();
     private Vector3 m_screenPoint   = new Vector3();
     private Vector3 m_curPos        = new Vector3();
+    #endregion
 
     private void OnMouseEnter()
     {
+        Debug.Log(transform.name);
+
+        if (m_meshRenderer == null)
+            m_meshRenderer = GetComponent<MeshRenderer>();
+
         m_meshRenderer.material.color = m_hoverColor;
     }
 
     private void OnMouseExit()
     {
+        Debug.Log(transform.name);
+
+        if (m_meshRenderer == null)
+            m_meshRenderer = GetComponent<MeshRenderer>();
+
         m_meshRenderer.material.color = m_originalColor;
     }
     
@@ -47,8 +58,15 @@ public class Draggable : MonoBehaviour
     {
         m_meshRenderer = GetComponent<MeshRenderer>();
 
-        if(m_meshRenderer != null)
-            m_originalColor = m_meshRenderer.material.color;
+        if (m_meshRenderer != null)
+        {
+            if (m_meshRenderer.material != null)
+                m_originalColor = m_meshRenderer.material.color;
+            else
+                Debug.LogWarningFormat("No mesh renderer material for ", transform.name);
+        }
+        else
+            Debug.LogWarningFormat("No mesh renderer found for ", transform.name);
     }
 
     // Update is called once per frame
