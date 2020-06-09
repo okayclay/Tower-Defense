@@ -24,9 +24,7 @@ public class LevelManager : MonoBehaviour
     public static Transform EndPoint    {  get { return m_endPoint; } }
     public static bool      Loaded      {  get { return m_loaded; } }
 
-    /* TO DO - Get plane size, multiply by number of planes to get grid size. Then generate level 
-     Be able to randomly place end point on grid 
-    Be able to 'draw' path
+    /* TO DO - Be able to 'draw' path
     Set a different nav mesh types for placeables
      */
 
@@ -89,6 +87,21 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// End point position is randomized on load
+    /// </summary>
+    void PlaceEndPoint()
+    {
+        m_v3.x = Random.Range(-m_planeWidth + 1, m_planeWidth - 1);
+        m_v3.y = .5f;
+        m_v3.z = Random.Range(0, m_planeDepth);
+
+        m_endPoint.position = m_v3;
+    }
+
+    /// <summary>
+    /// Give values to global variables
+    /// </summary>
     void SetVariables()
     {
         m_random = new System.Random(System.DateTime.Now.Millisecond);
@@ -114,6 +127,7 @@ public class LevelManager : MonoBehaviour
     {
         SetVariables();
         GetPlaneSize();
+        PlaceEndPoint();
         GenerateLevel();
         m_surface.BuildNavMesh();
 

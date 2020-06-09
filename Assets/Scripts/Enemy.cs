@@ -29,4 +29,10 @@ public class Enemy : MonoBehaviour
 
         BeginWalking();
     }
+
+    private void Update()
+    {
+        
+        //m_anim.SetBool("Run", false);
+    }
 }
