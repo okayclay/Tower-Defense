@@ -19,17 +19,14 @@ public class Enemy : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         m_anim = GetComponent<Animator>();
         m_curHealth = m_startingHealth;
         m_agent = GetComponent<NavMeshAgent>();
 
-        BeginWalking();
-    }
+        yield return new WaitUntil(() => LevelManager.Loaded);
 
-    // Update is called once per frame
-    void Update()
-    {
+        BeginWalking();
     }
 }
