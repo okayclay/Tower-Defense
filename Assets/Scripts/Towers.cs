@@ -17,6 +17,7 @@ public class Towers : Draggable
     [SerializeField] protected float        m_damage;       //Higher the level, higher the damage
     [SerializeField] protected int          m_cost;         //Higher cost too
     [SerializeField] protected int          m_lineOfSight;  //Maybe larger line of sight, idk
+
     [SerializeField] protected GameObject   m_ammoPrefab;
     [SerializeField] protected float        m_shootPower;
     [SerializeField] protected float        m_shootDelay;

@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     void BeginWalking()
     {
         m_anim.SetBool("Run", true);
-        m_agent.SetDestination(LevelManager.endPoint.position);
+        m_agent.SetDestination(LevelManager.EndPoint.position);
     }
 
     // Start is called before the first frame update
