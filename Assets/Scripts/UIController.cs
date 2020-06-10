@@ -1,24 +1,22 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Security.Principal;
 
-public class NewBehaviourScript : MonoBehaviour
+public class UIController : MonoBehaviour
 {
+    [SerializeField] protected Text m_waveLabel;
+
     public void CreatePrefab(string prefabName)
     {
         //Load from resources then instantiate copy - KC
         GameObject prefab = Resources.Load<GameObject>(prefabName);
         GameObject copy = GameObject.Instantiate(prefab, new Vector3(0, 1, 0), Quaternion.identity);
     }
-    // Start is called before the first frame update
-    void Start()
+    
+    public void UpdateWaveLabel(int left, int still)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        m_waveLabel.text = string.Format("Wave: {0}/{1}", left, still);
     }
 }

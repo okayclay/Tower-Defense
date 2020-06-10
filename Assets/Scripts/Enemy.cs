@@ -24,12 +24,19 @@ public class Enemy : MonoBehaviour
     protected NavMeshAgent  m_agent;
     protected bool          m_pathSet = false;
 
+    /// <summary>
+    /// Get the enemy to follow the path
+    /// </summary>
     void BeginWalking()
     {
         ChangeMode(Mode.Move);
         m_pathSet = true;
     }
 
+    /// <summary>
+    /// Switches animation 
+    /// </summary>
+    /// <param name="newMode">the next animaion to play</param>
     void ChangeMode(Mode newMode)
     {
         m_mode = newMode;
@@ -50,11 +57,24 @@ public class Enemy : MonoBehaviour
                 m_anim.SetBool("Run", false);
                 m_anim.SetBool("Attack", false);
                 m_anim.SetTrigger("Die");
-                Destroy(gameObject, 6f);
+                Die();
                 break;
         }
     }
 
+    /// <summary>
+    /// Stop walking and play death animation
+    /// </summary>
+    void Die()
+    {
+        m_agent.isStopped = true;
+        Destroy(gameObject, 6f);
+    }
+
+    /// <summary>
+    /// Is the enemy at the destination
+    /// </summary>
+    /// <returns>true if reached the end</returns>
     bool FinishedPath()
     {
         if (!m_agent.pathPending && m_pathSet)   //no longer making the path

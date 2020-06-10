@@ -1,105 +1,61 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
-using System.Collections.Generic;
 
 public class LevelManager : MonoBehaviour
 {
-    private System.Random m_random;
+    private static System.Random m_random;
 
-    protected NavMeshSurface    m_surface;
+    [SerializeField] protected int m_numWaves;
+    [SerializeField] protected List<EnemySpawner> m_spawners = new List<EnemySpawner>();
+
+    protected static UIController m_ui;
+
     protected static Transform  m_endPoint;
-    protected Transform         m_obstacleParent;
+    protected static bool       m_loaded = false;
+    protected float             m_breakTimer;
+    protected int               m_wavesNumber = 0;
 
-    protected int           m_planeWidth;
-    protected int           m_planeDepth;
-    protected Vector3       m_obstacleSize;
-    protected Vector3       m_v3;
+    public static Transform         EndPoint    {  get { return m_endPoint; } }
+    public static bool              Loaded      {  get { return m_loaded; } }
+    public static System.Random     Randomizer  {  get { return m_random; } }
+    public static UIController      UI          {  get { return m_ui; } }
 
-    protected static bool   m_loaded = false;
-
-    [SerializeField] protected Transform m_obstacle;
-
-    public static Transform EndPoint    {  get { return m_endPoint; } }
-    public static bool      Loaded      {  get { return m_loaded; } }
-
-    /* TO DO - Be able to 'draw' path
-    Set a different nav mesh types for placeables
-     */
-
+    // TO DO - Set a different nav mesh types for placeables
     /// <summary>
-    /// Gets the size of all the planes I have in the scene
+    /// Start the wave after letting the player place defenses
     /// </summary>
-    void GetPlaneSize()
+    public void BeginRound()
     {
-        Transform plane = GameObject.Find("Plane").transform;
-        Renderer r;
-
-        if (plane == null)
-            Debug.LogWarning("Couldn't find a single plane on this field");
-        else
+        if(m_wavesNumber < m_numWaves)
         {
-            r = plane.GetComponent<Renderer>();
-
-            if (r == null)
-                Debug.LogWarningFormat("{0} doesn't have a renderer", plane.name);
-            else
+            foreach(EnemySpawner spawner in m_spawners)
             {
-                m_planeWidth = (int)r.bounds.size.x;
-                m_planeDepth = (int)r.bounds.size.z;
+                StartCoroutine( spawner.Spawn() );
             }
+            m_wavesNumber++;
         }
+        m_ui.UpdateWaveLabel(m_wavesNumber, m_numWaves);
     }
     
     /// <summary>
-    /// Randomly creates a level during runtime based on the size of the grid
+    /// Tell when the round is over
     /// </summary>
-    void GenerateLevel()
+    /// <returns>true if there are no more enemies on the field</returns>
+    bool RoundComplete()
     {
-        int halfWidth, halfDepth, totalWidth, totalDepth;
-        float a, b;
-
-        halfDepth = (m_planeDepth / 2);
-        halfWidth = (m_planeWidth / 2);
-
-        totalWidth = (m_planeWidth * transform.Find("Ground").childCount);
-        totalDepth = (m_planeDepth * transform.Find("Ground").childCount);
-
-        // Loop over the grid
-        for (int x = -halfWidth; x < m_planeWidth + halfWidth; x+=2)
+        foreach(EnemySpawner spawner in m_spawners) //Spawners aren't done, round not done
         {
-            a = (x + m_obstacleSize.x); //So theres some space between blocks
-
-            for (int y = -halfDepth; y < m_planeDepth + halfDepth; y+=2)
-            {
-                b = (y + m_obstacleSize.z);
-                int num = m_random.Next(0, 10);
-
-                // Should we place a wall?
-                if (num < 6f)
-                {
-                    // Spawn a wall
-                    m_v3.x = (a - halfWidth);
-                    m_v3.y = .5f;
-                    m_v3.z = (b - halfDepth);
-
-                    Instantiate(m_obstacle, m_v3, Quaternion.identity, m_obstacleParent );
-                }
-            }
+            if (spawner.EnemiesToSpawn > 0)
+                return false;
         }
-    }
 
-    /// <summary>
-    /// End point position is randomized on load
-    /// </summary>
-    void PlaceEndPoint()
-    {
-        m_v3.x = Random.Range(-m_planeWidth + 1, m_planeWidth - 1);
-        m_v3.y = .5f;
-        m_v3.z = Random.Range(0, m_planeDepth);
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  //Enemies on the field theyre not dead so its not done
+        if (enemies.Length > 0)
+            return false;
 
-        m_endPoint.position = m_v3;
+        return true;
     }
 
     /// <summary>
@@ -108,31 +64,18 @@ public class LevelManager : MonoBehaviour
     void SetVariables()
     {
         m_random = new System.Random(System.DateTime.Now.Millisecond);
-
-        m_obstacleParent = GameObject.Find("Obstacles").transform;
-        if (m_obstacleParent == null)
-            Debug.LogWarning("Couldn't find the Obstacles gameobject");
+        m_breakTimer = 0;
+        m_ui = GameObject.Find("Menu Canvas").GetComponent<UIController>();
 
         m_endPoint = transform.Find("Goal");
         if (m_endPoint == null)
             Debug.LogWarning("Couldnt find the destination for this level");
-
-        if (GameObject.Find("NavMesh") != null)
-            m_surface = GameObject.Find("NavMesh").GetComponent<NavMeshSurface>();
-        else
-            Debug.LogWarning("Couldn't find Nav Mesh Object");
-
-        m_obstacleSize = m_obstacle.GetComponent<Renderer>().bounds.size;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         SetVariables();
-        //GetPlaneSize();
-       // PlaceEndPoint();
-       // GenerateLevel();
-        //m_surface.BuildNavMesh();
 
         m_loaded = true;
     }
