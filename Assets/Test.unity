@@ -223,7 +223,7 @@ BoxCollider:
   m_GameObject: {fileID: 442051702}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -359,6 +359,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1167225519, guid: 8ece2ed4a6fadd2438f58ad6ebc8b035, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 2061430081}
     - target: {fileID: 4764822528260160778, guid: 8ece2ed4a6fadd2438f58ad6ebc8b035,
         type: 3}
       propertyPath: m_Name
@@ -367,7 +371,7 @@ PrefabInstance:
     - target: {fileID: 4764822528260486168, guid: 8ece2ed4a6fadd2438f58ad6ebc8b035,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.23
+      value: 5.71
       objectReference: {fileID: 0}
     - target: {fileID: 4764822528260486168, guid: 8ece2ed4a6fadd2438f58ad6ebc8b035,
         type: 3}
@@ -605,13 +609,26 @@ GameObject:
   - component: {fileID: 1146423682}
   - component: {fileID: 1146423681}
   - component: {fileID: 1146423680}
+  - component: {fileID: 1146423679}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Menu Canvas
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
+--- !u!114 &1146423679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146423678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 038bdd718e4d78f4fa865fe93497a70c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1146423680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -966,7 +983,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1146423679}
         m_MethodName: CreatePrefab
         m_Mode: 5
         m_Arguments:

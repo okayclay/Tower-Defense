@@ -19,8 +19,6 @@ public class Draggable : MonoBehaviour
 
     private void OnMouseEnter()
     {
-        Debug.Log(transform.name);
-
         if (m_meshRenderer == null)
             m_meshRenderer = GetComponent<MeshRenderer>();
 
@@ -29,8 +27,6 @@ public class Draggable : MonoBehaviour
 
     private void OnMouseExit()
     {
-        Debug.Log(transform.name);
-
         if (m_meshRenderer == null)
             m_meshRenderer = GetComponent<MeshRenderer>();
 

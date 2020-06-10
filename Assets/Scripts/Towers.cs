@@ -14,7 +14,6 @@ public class Towers : Draggable
     }
 
     [SerializeField] protected int          m_level;        //Related to ammo type
-    [SerializeField] protected float        m_damage;       //Higher the level, higher the damage
     [SerializeField] protected int          m_cost;         //Higher cost too
     [SerializeField] protected int          m_lineOfSight;  //Maybe larger line of sight, idk
 
@@ -33,10 +32,9 @@ public class Towers : Draggable
 
         if (m_shootTimer > m_shootDelay)
         {
-            GameObject bullet = Instantiate(m_ammoPrefab, m_shootNode.position, Quaternion.identity );                                 //Create the bullet 
+            GameObject bullet = Instantiate(m_ammoPrefab, m_shootNode.position, Quaternion.identity );      //Create the bullet 
             bullet.GetComponent<Rigidbody>().velocity = transform.TransformDirection(0, 0, m_shootPower);   //Shoot
             m_shootTimer = 0;                                                                               //Reset timer
-            Destroy(bullet, 3f);                                                                            //Destroy the bullet after 3 seconds to avoid screen clutter
         }
     }
 
@@ -53,7 +51,6 @@ public class Towers : Draggable
             {
                 case "Enemy":
                     m_closestEnemy = collider.transform;
-                    Debug.Log("Shoot em!");
                     return true;
             }
         }

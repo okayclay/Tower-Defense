@@ -1,0 +1,31 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Projectile : MonoBehaviour
+{
+    [SerializeField] protected float m_damage;
+
+    public float Damage {  get { return m_damage; } }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        switch(collision.transform.tag)
+        {
+            case "Enemy":
+                Destroy(this.gameObject);
+                break;
+        }
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        Destroy(this.gameObject, 3f);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
