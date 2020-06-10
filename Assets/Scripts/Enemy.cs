@@ -17,8 +17,9 @@ public class Enemy : MonoBehaviour
     Animator    m_anim;
     Mode        m_mode = Mode.None;
 
-    [SerializeField] protected float m_startingHealth;
-    [SerializeField] protected Image m_healthBar;
+    [SerializeField] protected float    m_startingHealth;
+    [SerializeField] protected Image    m_healthBar;
+    [SerializeField] protected int      m_coinDrop;
 
     protected float         m_curHealth;
     protected NavMeshAgent  m_agent;

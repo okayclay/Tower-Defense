@@ -583,6 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_startingHealth: 100
   m_healthBar: {fileID: 664536923}
+  m_coinDrop: 3
 --- !u!65 &4764822528260053750
 BoxCollider:
   m_ObjectHideFlags: 0
