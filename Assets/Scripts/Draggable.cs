@@ -8,7 +8,7 @@ public class Draggable : MonoBehaviour
 
     // Start is called before the first frame update
     private Color m_hoverColor = Color.yellow;
-    private Color m_originalColor;
+    private Color m_originalColor = Color.white;
 
     #region[Drag variables]
     private Vector3 m_startingPos   = new Vector3();

@@ -57,11 +57,14 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     void GenerateLevel()
     {
-        int halfWidth, halfDepth;
+        int halfWidth, halfDepth, totalWidth, totalDepth;
         float a, b;
 
         halfDepth = (m_planeDepth / 2);
         halfWidth = (m_planeWidth / 2);
+
+        totalWidth = (m_planeWidth * transform.Find("Ground").childCount);
+        totalDepth = (m_planeDepth * transform.Find("Ground").childCount);
 
         // Loop over the grid
         for (int x = -halfWidth; x < m_planeWidth + halfWidth; x+=2)
@@ -126,10 +129,10 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         SetVariables();
-        GetPlaneSize();
-        PlaceEndPoint();
-        GenerateLevel();
-        m_surface.BuildNavMesh();
+        //GetPlaneSize();
+       // PlaceEndPoint();
+       // GenerateLevel();
+        //m_surface.BuildNavMesh();
 
         m_loaded = true;
     }
