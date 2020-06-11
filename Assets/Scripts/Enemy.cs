@@ -99,6 +99,9 @@ public class Enemy : MonoBehaviour
             case "Projectile":
                 UpdateHealth( -collision.transform.GetComponent<Projectile>().Damage );
                 break;
+
+            case "Player":  //Tower
+                break;
         }
     }
 

@@ -64,11 +64,4 @@ public class Draggable : MonoBehaviour
         else
             Debug.LogWarningFormat("No mesh renderer found for ", transform.name);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
-
