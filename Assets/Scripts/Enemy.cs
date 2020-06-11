@@ -99,8 +99,15 @@ public class Enemy : MonoBehaviour
             case "Projectile":
                 UpdateHealth( -collision.transform.GetComponent<Projectile>().Damage );
                 break;
+        }
+    }
 
+    private void OnCollisionStay(Collision collision)
+    {
+        switch(collision.transform.tag)
+        {
             case "Player":  //Tower
+                Debug.Log("Drop tower health");
                 break;
         }
     }
