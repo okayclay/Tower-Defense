@@ -109,9 +109,9 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetVariables();
-        m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
-        ChangePhase(ePhase.Build);
+      //  SetVariables();
+        //m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
+       // ChangePhase(ePhase.Build);
 
         m_loaded = true;
     }
