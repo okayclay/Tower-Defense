@@ -22,7 +22,8 @@ public class Draggable : MonoBehaviour
         if (m_meshRenderer == null)
             m_meshRenderer = GetComponent<MeshRenderer>();
 
-        m_meshRenderer.material.color = m_hoverColor;
+        if(LevelManager.Phase == LevelManager.ePhase.Build)
+            m_meshRenderer.material.color = m_hoverColor;
     }
 
     private void OnMouseExit()
@@ -30,7 +31,8 @@ public class Draggable : MonoBehaviour
         if (m_meshRenderer == null)
             m_meshRenderer = GetComponent<MeshRenderer>();
 
-        m_meshRenderer.material.color = m_originalColor;
+        if (LevelManager.Phase == LevelManager.ePhase.Build)
+            m_meshRenderer.material.color = m_originalColor;
     }
     
     void OnMouseDown()
@@ -47,7 +49,9 @@ public class Draggable : MonoBehaviour
 
         m_curPos = Camera.main.ScreenToWorldPoint(m_screenPoint) - m_offset;
         m_curPos.y = transform.position.y;
-        transform.position = m_curPos;
+
+        if (LevelManager.Phase == LevelManager.ePhase.Build)
+            transform.position = m_curPos;
     }
 
     void Start()

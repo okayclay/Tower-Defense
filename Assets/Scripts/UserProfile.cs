@@ -30,6 +30,10 @@ public class UserProfile
         return this;
     }
 
+    /// <summary>
+    /// Subtract cost from money
+    /// </summary>
+    /// <param name="cost">How much a certain defense building cost</param>
     public void BuyDefense(int cost)
     {
         m_coins -= cost;

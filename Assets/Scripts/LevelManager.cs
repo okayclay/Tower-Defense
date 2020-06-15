@@ -24,7 +24,7 @@ public class LevelManager : MonoBehaviour
 
     protected static UIController m_ui;
 
-    protected ePhase            m_phase = ePhase.None;
+    protected static ePhase            m_phase = ePhase.None;
     protected static Transform  m_endPoint;
     protected static bool       m_loaded = false;
     protected float             m_breakTimer;
@@ -33,6 +33,7 @@ public class LevelManager : MonoBehaviour
 
     public static Transform         EndPoint    {  get { return m_endPoint; } }
     public static bool              Loaded      {  get { return m_loaded; } }
+    public static ePhase            Phase       {  get { return m_phase; } }
     public static System.Random     Randomizer  {  get { return m_random; } }
     public static UIController      UI          {  get { return m_ui; } }
 
@@ -40,7 +41,7 @@ public class LevelManager : MonoBehaviour
     /// <summary>
     /// Start the wave after letting the player place defenses
     /// </summary>
-    protected void BeginRound()
+    protected void BeginWave()
     {
         if(m_waveNum < m_totalWaves)
         {
@@ -51,8 +52,19 @@ public class LevelManager : MonoBehaviour
             m_waveNum++;
         }
         m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
+        m_ui.ToggleMenu("Mid Game Menu", false);
     }
     
+    protected void Build()
+    {
+        m_breakTimer = m_secsToBuild;
+        m_ui.ToggleMenu("Mid Game Menu", true);
+    }
+
+    /// <summary>
+    /// Places towers on the field
+    /// </summary>
+    /// <param name="tower">Which tower</param>
     public void CreateTower(Towers tower)
     {
         //Load from resources then instantiate copy - KC
@@ -63,6 +75,10 @@ public class LevelManager : MonoBehaviour
         m_ui.UpdateCoins();
     }
 
+    /// <summary>
+    /// Called from Inspector
+    /// </summary>
+    /// <param name="phase">which phase to change to</param>
     public void ChangePhase(string phase)
     {
         switch(phase.ToLower())
@@ -73,6 +89,10 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called from string function to actually change the phase
+    /// </summary>
+    /// <param name="phase">Phase changing to</param>
     protected void ChangePhase(ePhase phase)
     {
         m_phase = phase;
@@ -80,15 +100,19 @@ public class LevelManager : MonoBehaviour
         switch(phase)
         {
             case ePhase.Build:
-                m_breakTimer = m_secsToBuild;
+                Build();
                 break;
 
             case ePhase.Play:
-                BeginRound();
+                BeginWave();
                 break;
         }
+        Debug.LogFormat("Changing to {0} mode", m_phase);
     }
 
+    /// <summary>
+    ///StartMenu's button callback
+    /// </summary>
     public void Play()
     {
         m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
@@ -146,11 +170,18 @@ public class LevelManager : MonoBehaviour
         m_loaded = true;
     }
 
+    /// <summary>
+    /// Stops the countdown so the round can begin
+    /// </summary>
     void StopTimer()
     {
         m_breakTimer = 0;
     }
 
+    /// <summary>
+    /// Checks if theres still time left to build
+    /// </summary>
+    /// <returns>true if the time is up</returns>
     bool TimesUp()
     {
         if (m_breakTimer <= 0)

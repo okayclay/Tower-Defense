@@ -28,6 +28,9 @@ public class Towers : Draggable
     protected Transform m_shootNode;
     protected Transform m_closestEnemy; //The target
     
+    /// <summary>
+    /// Shoots the closest enemy
+    /// </summary>
     protected void Attack()
     {
         m_shootTimer += Time.deltaTime;
@@ -61,15 +64,19 @@ public class Towers : Draggable
                     break;
             }
         }
+
+        m_closestEnemy = null;
         return false;
     }
 
     protected void FixedUpdate()
     {
-        if(CheckDistanceFromEnemy())
+        if (CheckDistanceFromEnemy())
         {
             Attack();
         }
+        else
+            transform.rotation = Quaternion.identity;  //Snap back if there is no enemy nearby
     }
     
     /// <summary>

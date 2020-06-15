@@ -96,6 +96,10 @@ public class Enemy : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Checks if something hits this
+    /// </summary>
+    /// <param name="collision">The object that hit the enemy</param>
     void OnCollisionEnter(Collision collision)
     {
         switch(collision.transform.tag)
@@ -139,6 +143,10 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Health changes if hit with projectiles
+    /// </summary>
+    /// <param name="amount">decrease by how much</param>
     void UpdateHealth(float amount)
     {
         m_curHealth += amount;
@@ -150,6 +158,9 @@ public class Enemy : MonoBehaviour
         UpdateHealthUI();
     }
 
+    /// <summary>
+    /// Changes the health bar to match the health
+    /// </summary>
     void UpdateHealthUI()
     {
         Vector2 v2;
