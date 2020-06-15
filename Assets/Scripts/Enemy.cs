@@ -24,6 +24,9 @@ public class Enemy : MonoBehaviour
     protected float         m_curHealth;
     protected NavMeshAgent  m_agent;
     protected bool          m_pathSet = false;
+    protected bool          m_isDead = false;
+
+    public bool IsDead {  get { return m_isDead; } }
 
     /// <summary>
     /// Get the enemy to follow the path
@@ -68,6 +71,7 @@ public class Enemy : MonoBehaviour
     /// </summary>
     void Die()
     {
+        m_isDead = true;
         m_agent.isStopped = true;
         Destroy(gameObject, 6f);
     }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class Towers : Draggable
@@ -20,6 +21,8 @@ public class Towers : Draggable
     [SerializeField] protected GameObject   m_ammoPrefab;
     [SerializeField] protected float        m_shootPower;
     [SerializeField] protected float        m_shootDelay;
+
+    public int Cost {  get { return m_cost; } }
 
     protected float     m_shootTimer;
     protected Transform m_shootNode;
@@ -50,8 +53,12 @@ public class Towers : Draggable
             switch(collider.tag)
             {
                 case "Enemy":
-                    m_closestEnemy = collider.transform;
-                    return true;
+                    if (!collider.GetComponent<Enemy>().IsDead)
+                    {
+                        m_closestEnemy = collider.transform;
+                        return true;
+                    }
+                    break;
             }
         }
         return false;

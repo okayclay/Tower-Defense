@@ -1,0 +1,3 @@
+<User>
+  <Coins Amount="50" />
+</User>

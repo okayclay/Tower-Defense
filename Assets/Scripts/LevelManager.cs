@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,11 +9,13 @@ public class LevelManager : MonoBehaviour
 {
     public enum ePhase
     {
+        None,
         Build,
         Play
     }
 
     private static System.Random m_random;
+    protected static GameEngine m_engine;
 
     [SerializeField] protected int m_totalWaves;
     [SerializeField] protected List<EnemySpawner> m_spawners = new List<EnemySpawner>();
@@ -21,7 +24,7 @@ public class LevelManager : MonoBehaviour
 
     protected static UIController m_ui;
 
-    protected ePhase            m_phase;
+    protected ePhase            m_phase = ePhase.None;
     protected static Transform  m_endPoint;
     protected static bool       m_loaded = false;
     protected float             m_breakTimer;
@@ -37,7 +40,7 @@ public class LevelManager : MonoBehaviour
     /// <summary>
     /// Start the wave after letting the player place defenses
     /// </summary>
-    public void BeginRound()
+    protected void BeginRound()
     {
         if(m_waveNum < m_totalWaves)
         {
@@ -50,7 +53,27 @@ public class LevelManager : MonoBehaviour
         m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
     }
     
-    void ChangePhase(ePhase phase)
+    public void CreateTower(Towers tower)
+    {
+        //Load from resources then instantiate copy - KC
+        GameObject prefab = Resources.Load<GameObject>(tower.name);
+        GameObject copy = GameObject.Instantiate(prefab, new Vector3(0, 1, 0), Quaternion.identity);
+        GameEngine.User.BuyDefense(tower.Cost);
+        m_ui.UpdateDefensesButton(tower.Cost);
+        m_ui.UpdateCoins();
+    }
+
+    public void ChangePhase(string phase)
+    {
+        switch(phase.ToLower())
+        {
+            case "build":   ChangePhase(ePhase.Build);          break;
+            case "play":    ChangePhase(ePhase.Play);           break;
+            default:        Debug.LogWarning("Invalid phase");  break;
+        }
+    }
+
+    protected void ChangePhase(ePhase phase)
     {
         m_phase = phase;
 
@@ -64,6 +87,14 @@ public class LevelManager : MonoBehaviour
                 BeginRound();
                 break;
         }
+    }
+
+    public void Play()
+    {
+        m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
+        m_ui.UpdateCoins();
+        m_ui.UpdateDefensesButton(10);
+        ChangePhase(ePhase.Build);
     }
 
     /// <summary>
@@ -90,6 +121,8 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     void SetVariables()
     {
+        m_engine = new GameEngine();
+
         m_random = new System.Random(System.DateTime.Now.Millisecond);
         m_breakTimer = 0;
 
@@ -109,10 +142,7 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-      //  SetVariables();
-        //m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
-       // ChangePhase(ePhase.Build);
-
+        SetVariables();
         m_loaded = true;
     }
 
