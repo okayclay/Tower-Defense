@@ -122,11 +122,7 @@ public class Enemy : MonoBehaviour
                 GameEngine.Level.UpdateTowerHealth(-m_damage);
                 break;
         }
-    }
-
-    protected void OnTriggerStay(Collider other)
-    {
-        Debug.Log("stay - " + other.name);
+        Debug.LogWarning("Stay - " + collision.transform.name);
     }
 
     // Start is called before the first frame update
