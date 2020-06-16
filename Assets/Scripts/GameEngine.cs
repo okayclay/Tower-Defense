@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class GameEngine
 {
+    private static System.Random m_random;
+
+    protected static LevelManager m_level;
     protected static UserProfile m_user;
+    protected static UIController m_ui;
+
     protected string m_profilePath;
 
-    public static UserProfile User {  get { return m_user; } }
+    public static LevelManager  Level       {  get { return m_level; } }
+    public static System.Random Randomizer  { get { return m_random; } }
+    public static UIController  UI          { get { return m_ui; } }
+    public static UserProfile   User        {  get { return m_user; } }
 
     public GameEngine()
     {
         m_user = new UserProfile();
+        m_random = new System.Random(System.DateTime.Now.Millisecond);
 
-        if(GetProfileData())
+        GrabClasses();
+
+        if (GetProfileData())
         {
             m_user.LoadProfile(m_profilePath);
         }
@@ -46,5 +57,16 @@ public class GameEngine
 
         return false;
 #endif
+    }
+
+    protected void GrabClasses()
+    {
+        m_ui = GameObject.Find("Menu Canvas").GetComponent<UIController>();
+        if (m_ui != null)
+            m_ui.Init();
+        else
+            Debug.LogError("Coudln't find UI");
+
+        m_level = GameObject.Find("Level").GetComponent<LevelManager>();
     }
 }

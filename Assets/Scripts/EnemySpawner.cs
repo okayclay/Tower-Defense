@@ -13,7 +13,7 @@ public class EnemySpawner : MonoBehaviour
 
     public IEnumerator Spawn()
     {
-        int index = LevelManager.Randomizer.Next(0, m_prefabs.Count);
+        int index = GameEngine.Randomizer.Next(0, m_prefabs.Count);
         GameObject enemy = Instantiate(m_prefabs[index], transform.position, Quaternion.identity);
 
         yield return new WaitForSeconds(m_spawnDelay);

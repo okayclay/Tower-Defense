@@ -31,15 +31,6 @@ public class UserProfile
     }
 
     /// <summary>
-    /// Subtract cost from money
-    /// </summary>
-    /// <param name="cost">How much a certain defense building cost</param>
-    public void BuyDefense(int cost)
-    {
-        m_coins -= cost;
-    }
-
-    /// <summary>
     /// Can it afford a certain defense building?
     /// </summary>
     /// <param name="cost">cost of the defense building</param>
@@ -130,5 +121,15 @@ public class UserProfile
 
         doc.Save(fileName);
         Debug.Log("Game saved");
+    }
+
+    /// <summary>
+    /// Change total coin amount
+    /// </summary>
+    /// <param name="amount">how much of a change</param>
+    public void UpdateCoins(int amount)
+    {
+        m_coins += amount;
+        GameEngine.UI.UpdateCoins();
     }
 }

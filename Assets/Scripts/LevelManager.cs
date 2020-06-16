@@ -14,28 +14,24 @@ public class LevelManager : MonoBehaviour
         Play
     }
 
-    private static System.Random m_random;
-    protected static GameEngine m_engine;
-
     [SerializeField] protected int m_totalWaves;
     [SerializeField] protected List<EnemySpawner> m_spawners = new List<EnemySpawner>();
-    [SerializeField] protected int m_towerHealth;
+    [SerializeField] protected int m_towerStartHealth;
     [SerializeField] protected float m_secsToBuild;
 
-    protected static UIController m_ui;
+    protected ePhase     m_phase = ePhase.None;
+    protected Transform  m_endPoint;
+    protected bool       m_loaded = false;
+    protected float      m_breakTimer;
+    protected int        m_waveNum;
+    protected int        m_curHealth;
+    protected Image      m_towerHealthBar;
 
-    protected static ePhase            m_phase = ePhase.None;
-    protected static Transform  m_endPoint;
-    protected static bool       m_loaded = false;
-    protected float             m_breakTimer;
-    protected int               m_waveNum;
-    protected Image             m_towerHealthBar;
+    public Transform         EndPoint    {  get { return m_endPoint; } }
+    public bool              Loaded      {  get { return m_loaded; } }
+    public ePhase            Phase       {  get { return m_phase; } }
 
-    public static Transform         EndPoint    {  get { return m_endPoint; } }
-    public static bool              Loaded      {  get { return m_loaded; } }
-    public static ePhase            Phase       {  get { return m_phase; } }
-    public static System.Random     Randomizer  {  get { return m_random; } }
-    public static UIController      UI          {  get { return m_ui; } }
+    public int TowerHealth {  get { return m_curHealth; } }
 
     // TO DO - Set different nav mesh types for placeables 
     /// <summary>
@@ -51,14 +47,17 @@ public class LevelManager : MonoBehaviour
             }
             m_waveNum++;
         }
-        m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
-        m_ui.ToggleMenu("Mid Game Menu", false);
+
+        StopTimer();
+        GameEngine.UI.UpdateWaveLabel(m_waveNum, m_totalWaves);
+        GameEngine.UI.ToggleMenu("Mid Game Menu", false);
     }
     
     protected void Build()
     {
         m_breakTimer = m_secsToBuild;
-        m_ui.ToggleMenu("Mid Game Menu", true);
+        GameEngine.UI.UpdateDefensesButton(10);
+        GameEngine.UI.ToggleMenu("Mid Game Menu", true);
     }
 
     /// <summary>
@@ -69,10 +68,9 @@ public class LevelManager : MonoBehaviour
     {
         //Load from resources then instantiate copy - KC
         GameObject prefab = Resources.Load<GameObject>(tower.name);
-        GameObject copy = GameObject.Instantiate(prefab, new Vector3(0, 1, 0), Quaternion.identity);
-        GameEngine.User.BuyDefense(tower.Cost);
-        m_ui.UpdateDefensesButton(tower.Cost);
-        m_ui.UpdateCoins();
+        GameObject.Instantiate(prefab, new Vector3(0, 1, 0), Quaternion.identity);
+        GameEngine.User.UpdateCoins(-tower.Cost);
+        GameEngine.UI.UpdateDefensesButton(tower.Cost);
     }
 
     /// <summary>
@@ -115,29 +113,11 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void Play()
     {
-        m_ui.UpdateWaveLabel(m_waveNum, m_totalWaves);
-        m_ui.UpdateCoins();
-        m_ui.UpdateDefensesButton(10);
+        GameEngine.UI.ToggleMenu("Mid Game Menu", false);
+        GameEngine.UI.UpdateWaveLabel(m_waveNum, m_totalWaves);
+        GameEngine.UI.UpdateCoins();
+        GameEngine.UI.UpdateDefensesButton(10);
         ChangePhase(ePhase.Build);
-    }
-
-    /// <summary>
-    /// Tell when the round is over
-    /// </summary>
-    /// <returns>true if there are no more enemies on the field</returns>
-    bool RoundComplete()
-    {
-        foreach(EnemySpawner spawner in m_spawners) //Spawners aren't done, round not done
-        {
-            if (spawner.EnemiesToSpawn > 0)
-                return false;
-        }
-
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  //Enemies on the field theyre not dead so its not done
-        if (enemies.Length > 0)
-            return false;
-
-        return true;
     }
 
     /// <summary>
@@ -145,16 +125,9 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     void SetVariables()
     {
-        m_engine = new GameEngine();
-
-        m_random = new System.Random(System.DateTime.Now.Millisecond);
+        GameEngine g = new GameEngine();
         m_breakTimer = 0;
-
-        m_ui = GameObject.Find("Menu Canvas").GetComponent<UIController>();
-        if (m_ui == null)
-            Debug.LogWarning("Didn't find UI controller");
-        else
-            m_ui.Init();
+        m_curHealth = m_towerStartHealth;
 
         m_endPoint = transform.Find("Goal");
         if (m_endPoint == null)
@@ -195,7 +168,7 @@ public class LevelManager : MonoBehaviour
         switch(m_phase)
         {
             case ePhase.Play:
-                if(RoundComplete())
+                if(WaveComplete())
                 {
                     ChangePhase(ePhase.Build);
                 }
@@ -205,7 +178,7 @@ public class LevelManager : MonoBehaviour
                 if (!TimesUp())
                 {
                     m_breakTimer -= Time.deltaTime;
-                    m_ui.UpdateTimer(m_breakTimer);
+                    GameEngine.UI.UpdateTimer(m_breakTimer);
                 }
                 else
                     ChangePhase(ePhase.Play);
@@ -213,8 +186,53 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public void UpdateTowerHealth()
+    public void UpdateTowerHealth(int amount)
     {
+        m_curHealth += amount;
 
+        if (m_curHealth <= 0)
+            m_curHealth = 0;
+
+        UpdateTowerHealthUI();
+    }
+
+    protected void UpdateTowerHealthUI()
+    {
+        Vector2 v2;
+        v2.y = .5f;
+        v2.x = (m_curHealth / m_towerStartHealth) * 3;
+        m_towerHealthBar.rectTransform.sizeDelta = v2;
+
+        if (m_curHealth > (m_towerStartHealth / 2))
+            m_towerHealthBar.color = Color.green;
+        else
+        {
+            if (m_curHealth <= (m_towerStartHealth * .33f))
+                m_towerHealthBar.color = Color.red;
+            else
+                m_towerHealthBar.color = Color.yellow;
+        }
+    }
+
+    /// <summary>
+    /// Tell when the round is over
+    /// </summary>
+    /// <returns>true if there are no more enemies on the field</returns>
+    bool WaveComplete()
+    {
+        foreach (EnemySpawner spawner in m_spawners) //Spawners aren't done, round not done
+        {
+            if (spawner.EnemiesToSpawn > 0)
+                return false;
+        }
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  //Enemies on the field theyre not dead so its not done
+        if (enemies.Length > 0)
+            return false;
+
+        if (m_curHealth <= 0)
+            return true;
+
+        return true;
     }
 }

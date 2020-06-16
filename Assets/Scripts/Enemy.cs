@@ -17,9 +17,11 @@ public class Enemy : MonoBehaviour
     Animator    m_anim;
     Mode        m_mode = Mode.None;
 
-    [SerializeField] protected float    m_startingHealth;
-    [SerializeField] protected Image    m_healthBar;
-    [SerializeField] protected int      m_coinDrop;
+    [SerializeField] protected float        m_startingHealth;
+    [SerializeField] protected Image        m_healthBar;
+    [SerializeField] protected int          m_coinDropAmount;
+    [SerializeField] protected GameObject   m_coin;
+    [SerializeField] protected int          m_damage;
 
     protected float         m_curHealth;
     protected NavMeshAgent  m_agent;
@@ -49,7 +51,7 @@ public class Enemy : MonoBehaviour
         {
             case Mode.Move:
                 m_anim.SetBool("Run", true);
-                m_agent.SetDestination(LevelManager.EndPoint.position);
+                m_agent.SetDestination(GameEngine.Level.EndPoint.position);
                 break;
 
             case Mode.Attack:
@@ -73,6 +75,8 @@ public class Enemy : MonoBehaviour
     {
         m_isDead = true;
         m_agent.isStopped = true;
+        m_coin.SetActive(true);
+        GameEngine.User.UpdateCoins(m_coinDropAmount);
         Destroy(gameObject, 6f);
     }
 
@@ -115,9 +119,14 @@ public class Enemy : MonoBehaviour
         switch(collision.transform.tag)
         {
             case "Player":  //Tower
-                Debug.Log("Drop tower health");
+                GameEngine.Level.UpdateTowerHealth(-m_damage);
                 break;
         }
+    }
+
+    protected void OnTriggerStay(Collider other)
+    {
+        Debug.Log("stay - " + other.name);
     }
 
     // Start is called before the first frame update
@@ -127,7 +136,7 @@ public class Enemy : MonoBehaviour
         m_curHealth = m_startingHealth;
         m_agent     = GetComponent<NavMeshAgent>();
 
-        yield return new WaitUntil(() => LevelManager.Loaded);
+        yield return new WaitUntil(() => GameEngine.Level.Loaded);
 
         BeginWalking();
     }
