@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
@@ -16,22 +17,22 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] protected int m_totalWaves;
     [SerializeField] protected List<EnemySpawner> m_spawners = new List<EnemySpawner>();
-    [SerializeField] protected int m_towerStartHealth;
+    [SerializeField] protected float m_towerStartHealth;
     [SerializeField] protected float m_secsToBuild;
 
-    protected ePhase     m_phase = ePhase.None;
-    protected Transform  m_endPoint;
-    protected bool       m_loaded = false;
-    protected float      m_breakTimer;
-    protected int        m_waveNum;
-    protected int        m_curHealth;
-    protected Image      m_towerHealthBar;
+    protected ePhase    m_phase = ePhase.None;
+    protected Transform m_endPoint;
+    protected bool      m_loaded = false;
+    protected float     m_breakTimer;
+    protected int       m_waveNum;
+    protected float     m_curHealth;
+    protected Image     m_towerHealthBar;
 
     public Transform         EndPoint    {  get { return m_endPoint; } }
     public bool              Loaded      {  get { return m_loaded; } }
     public ePhase            Phase       {  get { return m_phase; } }
 
-    public int TowerHealth {  get { return m_curHealth; } }
+    public float TowerHealth {  get { return m_curHealth; } }
 
     // TO DO - Set different nav mesh types for placeables 
     /// <summary>
@@ -193,7 +194,7 @@ public class LevelManager : MonoBehaviour
         if (m_curHealth <= 0)
             m_curHealth = 0;
 
-        UpdateTowerHealthUI();
+        UpdateTowerHealthUI();     
     }
 
     protected void UpdateTowerHealthUI()
@@ -226,12 +227,12 @@ public class LevelManager : MonoBehaviour
                 return false;
         }
 
+        if (m_curHealth <= 0)
+            return true;
+
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  //Enemies on the field theyre not dead so its not done
         if (enemies.Length > 0)
             return false;
-
-        if (m_curHealth <= 0)
-            return true;
 
         return true;
     }

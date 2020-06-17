@@ -23,12 +23,16 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected GameObject   m_coin;
     [SerializeField] protected int          m_damage;
 
+    protected float m_healthTimer = 0;
+
     protected float         m_curHealth;
     protected NavMeshAgent  m_agent;
     protected bool          m_pathSet = false;
     protected bool          m_isDead = false;
 
     public bool IsDead {  get { return m_isDead; } }
+
+    //TO DO - Have the coin dropped always face the camera
 
     /// <summary>
     /// Get the enemy to follow the path
@@ -119,10 +123,15 @@ public class Enemy : MonoBehaviour
         switch(collision.transform.tag)
         {
             case "Player":  //Tower
-                GameEngine.Level.UpdateTowerHealth(-m_damage);
+                m_healthTimer += Time.deltaTime;
+
+                if(m_healthTimer > 1)
+				{
+                    GameEngine.Level.UpdateTowerHealth(-m_damage);
+                    m_healthTimer = 0;
+				}
                 break;
         }
-        Debug.LogWarning("Stay - " + collision.transform.name);
     }
 
     // Start is called before the first frame update
@@ -169,7 +178,7 @@ public class Enemy : MonoBehaviour
     void UpdateHealthUI()
     {
         Vector2 v2;
-        v2.y = .5f;
+        v2.y = .2f;
         v2.x = (m_curHealth / m_startingHealth) * 3;
         m_healthBar.rectTransform.sizeDelta = v2;
 
