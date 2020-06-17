@@ -16,8 +16,8 @@ public class Draggable : MonoBehaviour
     private Vector3 m_screenPoint   = new Vector3();
     private Vector3 m_curPos        = new Vector3();
     #endregion
-    //TO DO - Tighten up the drag positioning
-    //TO DO - Have it snap to a grid
+    //TODO - Tighten up the drag positioning
+    //TODO - Have it snap to a grid
     private void OnMouseEnter()
     {
         if (m_meshRenderer == null)

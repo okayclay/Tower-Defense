@@ -32,7 +32,8 @@ public class Enemy : MonoBehaviour
 
     public bool IsDead {  get { return m_isDead; } }
 
-    //TO DO - Have the coin dropped always face the camera
+    //TODO - Have the coin dropped always face the camera
+    //TODO - Draw Path
 
     /// <summary>
     /// Get the enemy to follow the path

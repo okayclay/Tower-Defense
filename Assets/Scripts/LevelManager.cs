@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
 
     public float TowerHealth {  get { return m_curHealth; } }
 
-    // TO DO - Set different nav mesh types for placeables 
+    // TODO - Set different nav mesh types for placeables 
     /// <summary>
     /// Start the wave after letting the player place defenses
     /// </summary>
