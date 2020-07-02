@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Principal;
 
 public class UIController : MonoBehaviour
 {
-    [SerializeField] protected Text m_coinText;
-    [SerializeField] protected Text m_breakText;
+    [System.Serializable]
+    public struct Announcement
+    {
+        [SerializeField] public GameObject parent;
+        [SerializeField] public Text text;
+        [SerializeField] public Button next;
+        [SerializeField] public Button retry;
+    }
+
+    [SerializeField] protected Text         m_coinText;
+    [SerializeField] protected Text         m_breakText;
+    [SerializeField] protected Announcement m_announcementUI;
 
     protected Text          m_waveLabel;
     protected GameObject    m_midGameMenu;
@@ -23,13 +30,43 @@ public class UIController : MonoBehaviour
         m_buildBtn = m_midGameMenu.transform.Find("Button Holder/Defend").GetComponent<Button>();
     }
 
+    public void ShowAnnoucement(bool won)
+	{
+        switch(won)
+		{
+            case true: 
+                m_announcementUI.text.text = "You cleared the level!";
+                m_announcementUI.next.enabled = true;
+                m_announcementUI.retry.enabled = false;
+                break;
+
+            case false: 
+                m_announcementUI.text.text = "GAME OVER";
+                m_announcementUI.next.enabled = false;
+                m_announcementUI.retry.enabled = true;
+                break;
+		}
+	}
+
     public void ToggleMenu(string menu, bool enabled)
     {
+        GameObject menuObj;
+
         menu = menu.Replace(" ", string.Empty); //Remove any spaces
+        menu = menu.ToLower();
+
         switch(menu.ToLower())
         {
             case "midgamemenu":
                 m_midGameMenu.SetActive(enabled);
+                break;
+
+            case "mainmenu":
+                menuObj = transform.Find("Main Menu").gameObject;
+                if (menuObj != null)
+                    menuObj.SetActive(enabled);
+                else
+                    Debug.LogWarning("Couldn't find the Main Menu gameobject");
                 break;
         }
     }

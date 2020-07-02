@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
@@ -28,6 +29,8 @@ public class LevelManager : MonoBehaviour
     protected float     m_curHealth;
     protected Image     m_towerHealthBar;
 
+    protected GameEngine m_gameEngine;
+
     public Transform         EndPoint    {  get { return m_endPoint; } }
     public bool              Loaded      {  get { return m_loaded; } }
     public ePhase            Phase       {  get { return m_phase; } }
@@ -44,6 +47,7 @@ public class LevelManager : MonoBehaviour
         {
             foreach(EnemySpawner spawner in m_spawners)
             {
+                spawner.ResetCount();
                 StartCoroutine( spawner.Spawn() );
             }
             m_waveNum++;
@@ -114,19 +118,26 @@ public class LevelManager : MonoBehaviour
     /// </summary>
     public void Play()
     {
-        GameEngine.UI.ToggleMenu("Mid Game Menu", false);
+        GameEngine.UI.ToggleMenu("Mid Game Menu", false);   
+        GameEngine.UI.ToggleMenu("MainMenu", false);
         GameEngine.UI.UpdateWaveLabel(m_waveNum, m_totalWaves);
         GameEngine.UI.UpdateCoins();
         GameEngine.UI.UpdateDefensesButton(10);
         ChangePhase(ePhase.Build);
     }
 
-    /// <summary>
-    /// Give values to global variables
-    /// </summary>
-    void SetVariables()
+	public void Reset()
+	{
+        SceneManager.LoadScene(0);
+        GameEngine.UI.ToggleMenu("MainMenu", false);
+    }
+
+	/// <summary>
+	/// Give values to global variables
+	/// </summary>
+	void SetVariables()
     {
-        GameEngine g = new GameEngine();
+        m_gameEngine = new GameEngine();
         m_breakTimer = 0;
         m_curHealth = m_towerStartHealth;
 
@@ -171,7 +182,10 @@ public class LevelManager : MonoBehaviour
             case ePhase.Play:
                 if(WaveComplete())
                 {
-                    ChangePhase(ePhase.Build);
+                    if (m_waveNum != m_totalWaves)
+                        ChangePhase(ePhase.Build);
+                    else
+                        m_gameEngine.LevelOver(true);
                 }
                 break;
 
@@ -192,7 +206,10 @@ public class LevelManager : MonoBehaviour
         m_curHealth += amount;
 
         if (m_curHealth <= 0)
+		{
             m_curHealth = 0;
+            m_gameEngine.LevelOver(false);
+        }
 
         UpdateTowerHealthUI();     
     }
@@ -226,9 +243,6 @@ public class LevelManager : MonoBehaviour
             if (spawner.EnemiesToSpawn > 0)
                 return false;
         }
-
-        if (m_curHealth <= 0)
-            return true;
 
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");  //Enemies on the field theyre not dead so its not done
         if (enemies.Length > 0)

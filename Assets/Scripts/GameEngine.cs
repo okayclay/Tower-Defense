@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class GameEngine
 {
-    private static System.Random m_random;
+    private static System.Random    m_random;
 
     protected static LevelManager m_level;
     protected static UserProfile m_user;
@@ -68,5 +69,15 @@ public class GameEngine
             Debug.LogError("Coudln't find UI");
 
         m_level = GameObject.Find("Level").GetComponent<LevelManager>();
+    }
+    
+    /// <summary>
+    /// The level ended, either proceed to next one or give player a chance to redo this one
+    /// </summary>
+    /// <param name="won">If the level eneded because the player survived all the waves</param>
+    public void LevelOver(bool won)
+    {
+        Time.timeScale = 0;
+        m_ui.ShowAnnoucement(won);
     }
 }

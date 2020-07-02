@@ -6,12 +6,25 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] List<GameObject> m_prefabs = new List<GameObject>();
-    [SerializeField] int m_enemyCount;
+    [SerializeField] int m_totalEnemies;
     [SerializeField] float m_spawnDelay;
+
+    protected int m_enemyCount;
 
     public int EnemiesToSpawn {  get { return m_enemyCount; } }
 
-    public IEnumerator Spawn()
+    protected void AddEnemies(int amount)
+	{
+        m_totalEnemies += amount;
+	}
+
+	public void ResetCount()
+	{
+        AddEnemies(m_totalEnemies++);
+        m_enemyCount = m_totalEnemies;
+	}
+
+	public IEnumerator Spawn()
     {
         int index = GameEngine.Randomizer.Next(0, m_prefabs.Count);
         GameObject enemy = Instantiate(m_prefabs[index], transform.position, Quaternion.identity);
