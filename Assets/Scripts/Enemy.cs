@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour
 {
+    //TODO: When I die, I slid around a little
+    //TODO: Better navigation, I ran into obstacles alot
     enum Mode
     {
         None,
