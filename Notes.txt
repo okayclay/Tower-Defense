@@ -1,0 +1,3 @@
+Need gameover - lost to be put in
+Clean up the mouse dragging, the cursor all far from the tower during placement
+Enemies slide during death animation, stop that

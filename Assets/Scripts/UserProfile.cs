@@ -69,7 +69,7 @@ public class UserProfile
             XmlDocument document = new XmlDocument();
             document.LoadXml(text);
             ParseXML(document.DocumentElement);
-            Debug.Log("Profile Loaded");
+            Debug.Log("Profile Loaded - " + curFile);
         }
         else
             Debug.LogErrorFormat("UserProfile.LoadUsers() error: {0}", name);
@@ -100,6 +100,9 @@ public class UserProfile
     {
 #if UNITY_ANDROID || UNITY_IOS
         SaveProfile(Application.persistentDataPath + "/Profile.xml");
+        Debug.Log("Profile path:  " + Application.persistentDataPath);
+#else
+        SaveProfile(Application.dataPath + "\\Profile.xml");
 #endif
     }
     

@@ -128,7 +128,7 @@ public class Enemy : MonoBehaviour
             case "Player":  //Tower
                 m_healthTimer += Time.deltaTime;
 
-                if(m_healthTimer > 1)
+                if(m_healthTimer > 1 && m_mode != Mode.Death)   //if the eney is dead, the goal tower shouldn't lose health
 				{
                     GameEngine.Level.UpdateTowerHealth(-m_damage);
                     m_healthTimer = 0;
